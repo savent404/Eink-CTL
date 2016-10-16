@@ -1336,7 +1336,54 @@ void LCD_ShowString(unsigned short x,unsigned short y,const unsigned char *p)
         p++;
     }  
 }
-void LCD_ShowUsrFont24(unsigned short x, unsigned short y, const char *src) {
+/* 前15000字节为黑色， 后15000字节为红色 */
+void LCD_Draw_ATD_Black(unsigned char x, unsigned short y, const char *src) {
+	uint32_t i,j;
+	uint8_t buf,cnt;
+	/* 原像素为400*300 */
+	/* 改为300 * 225 */ /*3/4*/
+	
+	POINT_COLOR = BLACK;
+	for (i = 0; i < 300; i++) {
+		for (j = 0; j < 400/8; j++) {
+			
+			/*MSB*/
+			buf = *src;
+			cnt = 8;
+			src += 1;
+			while (cnt--) {
+				if (buf & 0x80)
+					LCD_DrawPoint(x + (j*8 + 8 - cnt)*1/2, y + i*1/2);
+				buf <<= 1;
+			}
+		}
+	}
+}
+/* 首先调用black，再调用red，白色部分不再重新刷新 */
+void LCD_Draw_ATD_Red(unsigned char x, unsigned short y, unsigned char *src) {
+	uint32_t i,j;
+	uint8_t buf,cnt;
+	POINT_COLOR = RED;
+	
+	/* 原像素为400*300 */
+	/* 改为300 * 225 */ /*3/4*/
+	for (i = 0; i < 300; i++) {
+		for (j = 0; j < 400/8; j++) {
+			
+			/*MSB*/
+			buf = *src;
+			cnt = 8;
+			src += 1;
+			while (cnt--) {
+				if (buf & 0x80)
+					LCD_DrawPoint(x + (j*8 + 8 - cnt)*1/2, y + i*1/2);
+				buf <<= 1;
+			}
+		}
+	}
+	POINT_COLOR = BLACK;
+}
+void LCD_ShowUsrFont24(unsigned short x, unsigned short y, unsigned char *src) {
   int line, i;
   unsigned char buff;
   const unsigned char *pt = (const unsigned char*)src;

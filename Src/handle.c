@@ -7,6 +7,7 @@
 #include "nRF24L01.h"
 /* Usr Define */
 #define LCD_TEXT(x) (const unsigned char*)(x)
+#define DEBUG_WITHOUT_SLAVE 1
 #if (DEBUG_WITHOUT_SLAVE)
   #define __SEND HAL_Delay(1);
 #else
@@ -21,6 +22,8 @@ nRF24L01_TxStructure tpt;
 
 /* LCD private var */
 extern void          LCD_ShowUsrFont24(unsigned short x, unsigned short y, const char *src);
+extern void          LCD_Draw_ATD_Black(unsigned char x, unsigned short y, unsigned char *src);
+extern void          LCD_Draw_ATD_Red(unsigned char x, unsigned short y, unsigned char *src);
 extern const char    font_ch[][72];
 static uint8_t       File_Buffer[120000 / 5];
 
@@ -89,7 +92,7 @@ unsigned char Wirless_WaitingTx_CancelHook(void) {
 }
 static void File_Trasmit(uint32_t file_loc) {
 	FIL file;
-	
+	uint32_t file_id = 0;
 	/* Power Up the Slave */
 	HAL_GPIO_WritePin(SLAVE_POWER_SWITCH_GPIO_Port,
 	                  SLAVE_POWER_SWITCH_Pin,
@@ -113,10 +116,18 @@ static void File_Trasmit(uint32_t file_loc) {
 	/* open file */
 	file_open(file_loc, &file);
 	
+	/* get file type */
+	file_id = file_type(file_loc);
+	/* id = 0x01 - DTA type, Byte:120000
+	   id = 0x02 - ATD type, Byte:30000
+	*/
+	
 	/*sending...*/
 	{
 		uint32_t i,j;
 		UINT     cnt;
+		uint32_t Byte = 0;
+		uint32_t loop = 0;
 		
 		/* send start flag */
 		TIMEOUT_cnt = 0;
@@ -124,21 +135,40 @@ static void File_Trasmit(uint32_t file_loc) {
 		tpt.Txnum = 1;
 		__SEND
 		
+		switch (file_id) {
+				case 0x01:
+				loop = 5;
+				Byte = 120000/5;
+				break;
+				case 0x02:
+				loop = 2;
+				Byte = 15000;
+				break;
+				default:
+				break;
+		}
 		/* read file and send */
-		for (i = 0; i < 5; i++) {
-			f_read(&file, File_Buffer, 120000/5, &cnt);
+		for (i = 0; i < loop; i++) {
+			f_read(&file, File_Buffer, Byte, &cnt);
 			tpt.pSrc = File_Buffer;
 			tpt.Txnum = 32;
-			for (j = 0; j < 120000/5/32; j++) {
+			for (j = 0; j < Byte/32; j++) {
 				
 				/* send data */
 				TIMEOUT_cnt = 0;
 				tpt.pSrc += 32;
 				__SEND;
 				
+				/* 进度条 */
+				/*
+				i_per = 75/loop
+				j_per = j_per * (32 / Byte) */
+				LCD_DrawLine(i*75/loop + j*75/loop*32/Byte, 280, i*75/loop + j*75/loop*32/Byte, 300);
 				
+				/* Chancel and error */
 				if (Usr_Cancel_Flag == 2) {
 					LCD_Fill(80, 270, 240, 304, WHITE);
+					/* 发送失败 */
 					LCD_ShowUsrFont24(20 + 80, 270, font_ch[4]);
 					LCD_ShowUsrFont24(20 + 104, 270, font_ch[5]);
 					LCD_ShowUsrFont24(20 + 128, 270, font_ch[7]);
@@ -151,23 +181,27 @@ static void File_Trasmit(uint32_t file_loc) {
 					Usr_Cancel_Flag = 0;
 					goto ENDOFSENDING;
 				}
-				
-				/* 进度条 */
-				if (j % (50) == 0)
-					LCD_DrawLine(j / 50 + i*15, 280, j / 50 + i*15, 300);
+
 			}
 		}
+		TIMEOUT_cnt = 0;
+		tpt.pSrc = (uint8_t*)eof_flag;
+		tpt.Txnum = 3;
+		__SEND;/*sending....end*/
+		
+		switch (file_id) {
+			case 0x01:
+				/* Waiting (4.5s) Slave complete*/
+				HAL_Delay(4500);
+				break;
+			
+			case 0x02:
+				/* Waiting (8.0s) Slave complete*/
+				HAL_Delay(8000);
+				break;
+		}
 	} /* send handle */
-	
-	TIMEOUT_cnt = 0;
-	tpt.pSrc = (uint8_t*)eof_flag;
-	tpt.Txnum = 3;
-	__SEND;/*sending....end*/
-	
-	/* Waiting (4.5s) Slave complete*/
-	HAL_Delay(4500);
-	
-	
+
 	ENDOFSENDING:
 	
 	/* close file*/
@@ -202,17 +236,19 @@ void Unit_Handle(void *arg) {
 			LCD_Clear(WHITE);
 			POINT_COLOR = BLACK;
 			
+			/**
+		    * 绘制函数
+		   */
 			/* 绘制确定 */
 			LCD_ShowUsrFont24(10, 190, font_ch[0]);
 			LCD_ShowUsrFont24(34, 190, font_ch[1]);
-			
 			/* 绘制取消 */
 			LCD_ShowUsrFont24(180, 190, font_ch[2]);
 			LCD_ShowUsrFont24(204, 190, font_ch[3]);
-			
 			/* Draw a line */
 			LCD_DrawLine(0, 220, 240, 220);
-			/* open file */
+		
+			/* Open file */
 			res = file_open(file_loc, &file);
 			/* identy id */
 			res = file_type(file_loc);
@@ -233,6 +269,11 @@ void Unit_Handle(void *arg) {
 					break;
 				/* .ATD red-black-white one Layer */
 				case 0x02:
+					/* blace pic first */
+					efs = f_read(&file, File_Buffer, 15000, &fnt);
+					LCD_Draw_ATD_Black(20, 15, File_Buffer);
+					efs = f_read(&file, File_Buffer, 15000, &fnt);
+					LCD_Draw_ATD_Red(20, 15, File_Buffer);
 					break;
 				default:
 					break;
