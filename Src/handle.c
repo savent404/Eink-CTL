@@ -7,7 +7,7 @@
 #include "nRF24L01.h"
 /* Usr Define */
 #define LCD_TEXT(x) (const unsigned char*)(x)
-#define DEBUG_WITHOUT_SLAVE 1
+
 #if (DEBUG_WITHOUT_SLAVE)
   #define __SEND HAL_Delay(1);
 #else
@@ -16,7 +16,8 @@
 	
 /* Wirless private var */
 static const uint8_t addr[5] = {0x34,0x43,0x10,0x10,0x01};
-const uint8_t        start_flag[] = "S";
+const uint8_t        start_flag_type1[] = "A";
+const uint8_t        start_flag_type2[] = "B";
 const uint8_t        eof_flag[]   = "EOF";
 nRF24L01_TxStructure tpt;
 
@@ -131,7 +132,14 @@ static void File_Trasmit(uint32_t file_loc) {
 		
 		/* send start flag */
 		TIMEOUT_cnt = 0;
-		tpt.pSrc = (uint8_t*)start_flag;
+		switch (file_id) {
+			case 0x01:
+				tpt.pSrc = (uint8_t*)start_flag_type1;
+				break;
+			case 0x02:
+				tpt.pSrc = (uint8_t*)start_flag_type2;
+				break;
+		}
 		tpt.Txnum = 1;
 		__SEND
 		
