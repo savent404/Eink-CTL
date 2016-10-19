@@ -15,7 +15,9 @@
 #endif
 	
 /* Wirless private var */
-static const uint8_t addr[5] = {0x34,0x43,0x10,0x10,0x01};
+static const uint8_t addr_type1[5] = {0x34,0x43,0x10,0x10,0x01};
+static const uint8_t addr_type2[5] = {0x34,0x43,0x10,0x10,0x02};
+
 const uint8_t        start_flag_type1[] = "A";
 const uint8_t        start_flag_type2[] = "B";
 const uint8_t        eof_flag[]   = "EOF";
@@ -68,8 +70,7 @@ uint32_t Unity_check(void) {
 	/* nRF24L01 check ok, then init moudel */
 	nRF24L01_Init();
 	nRF24L01_Channel_Init(40);
-	nRF24L01_TxInit((uint8_t*)addr);
-	nRF24L01_RxInit(P0, (uint8_t*)addr);
+
 	
 	/* file system has already init in file_init() */
 	return 0x00;
@@ -94,6 +95,9 @@ unsigned char Wirless_WaitingTx_CancelHook(void) {
 static void File_Trasmit(uint32_t file_loc) {
 	FIL file;
 	uint32_t file_id = 0;
+	uint32_t Byte = 0;
+	uint32_t loop = 0;
+	
 	/* Power Up the Slave */
 	HAL_GPIO_WritePin(SLAVE_POWER_SWITCH_GPIO_Port,
 	                  SLAVE_POWER_SWITCH_Pin,
@@ -122,39 +126,35 @@ static void File_Trasmit(uint32_t file_loc) {
 	/* id = 0x01 - DTA type, Byte:120000
 	   id = 0x02 - ATD type, Byte:30000
 	*/
-	
+	switch (file_id) {
+		case 0x01:
+			nRF24L01_TxInit((uint8_t*)addr_type1);
+			nRF24L01_RxInit(P0, (uint8_t*)addr_type1);
+			tpt.pSrc = (uint8_t*)start_flag_type1;
+			loop = 5;
+			Byte = 120000/5;
+			break;
+		case 0x02:
+			nRF24L01_TxInit((uint8_t*)addr_type2);
+			nRF24L01_RxInit(P0, (uint8_t*)addr_type2);
+			tpt.pSrc = (uint8_t*)start_flag_type2;
+			loop = 2;
+			Byte = 15000;
+			break;
+		default:
+			break;
+	}
 	/*sending...*/
 	{
 		uint32_t i,j;
 		UINT     cnt;
-		uint32_t Byte = 0;
-		uint32_t loop = 0;
+
 		
 		/* send start flag */
 		TIMEOUT_cnt = 0;
-		switch (file_id) {
-			case 0x01:
-				tpt.pSrc = (uint8_t*)start_flag_type1;
-				break;
-			case 0x02:
-				tpt.pSrc = (uint8_t*)start_flag_type2;
-				break;
-		}
 		tpt.Txnum = 1;
 		__SEND
 		
-		switch (file_id) {
-				case 0x01:
-				loop = 5;
-				Byte = 120000/5;
-				break;
-				case 0x02:
-				loop = 2;
-				Byte = 15000;
-				break;
-				default:
-				break;
-		}
 		/* read file and send */
 		for (i = 0; i < loop; i++) {
 			f_read(&file, File_Buffer, Byte, &cnt);
@@ -197,15 +197,31 @@ static void File_Trasmit(uint32_t file_loc) {
 		tpt.Txnum = 3;
 		__SEND;/*sending....end*/
 		
+		/**
+		   Waiting Slave complete.
+		   Showing a red line
+		*/
 		switch (file_id) {
 			case 0x01:
 				/* Waiting (4.5s) Slave complete*/
-				HAL_Delay(4500);
+				j = 450;
+				POINT_COLOR = RED;
+				for (i = 0; i < j; i++) {
+					LCD_DrawLine(i*75/j, 280, i*75/j, 300);
+					HAL_Delay(10);
+				}
+				POINT_COLOR = BLACK;
 				break;
 			
 			case 0x02:
-				/* Waiting (8.0s) Slave complete*/
-				HAL_Delay(8000);
+				/* Waiting (12.0s) Slave complete*/
+				j = 1200;
+				POINT_COLOR = RED;
+				for (i = 0; i < j; i++) {
+					LCD_DrawLine(i*75/j, 280, i*75/j, 300);
+					HAL_Delay(10);
+				}
+				POINT_COLOR = BLACK;
 				break;
 		}
 	} /* send handle */
