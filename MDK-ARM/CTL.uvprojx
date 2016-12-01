@@ -387,6 +387,54 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Application/BSP</GroupName>
+          <Files>
+            <File>
+              <FileName>nRF24L01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\nRF24L01.c</FilePath>
+            </File>
+            <File>
+              <FileName>nRF24L01_bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\nRF24L01_bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>font_ch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\font_ch.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/System</GroupName>
+          <Files>
+            <File>
+              <FileName>file_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\file_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>handle.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\handle.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
+        </Group>
+        <Group>
           <GroupName>Middlewares/FatFs</GroupName>
           <Files>
             <File>
@@ -420,14 +468,14 @@
           <GroupName>Application/User</GroupName>
           <Files>
             <File>
+              <FileName>bsp_driver_sd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/bsp_driver_sd.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f1xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/stm32f1xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_hal_timebase_TIM.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/stm32f1xx_hal_timebase_TIM.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -540,59 +588,6 @@
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/Handle</GroupName>
-          <Files>
-            <File>
-              <FileName>file_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\file_ex.c</FilePath>
-            </File>
-            <File>
-              <FileName>handle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\handle.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/BSP</GroupName>
-          <Files>
-            <File>
-              <FileName>font_ch.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\font_ch.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_driver_sd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\bsp_driver_sd.c</FilePath>
-            </File>
-            <File>
-              <FileName>key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\key.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>nRF24L01.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\nRF24L01.c</FilePath>
-            </File>
-            <File>
-              <FileName>nRF24L01_bsp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Src\nRF24L01_bsp.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>
