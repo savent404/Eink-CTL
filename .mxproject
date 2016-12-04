@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=E:/Project/MDK/CTL/Inc
+HeaderPath=E:/GitHub_Clone/Eink-CTL/Inc
 HeaderFiles=ffconf.h;bsp_driver_sd.h;fatfs.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;mxconstants.h;
-SourcePath=E:/Project/MDK/CTL/Src
+SourcePath=E:/GitHub_Clone/Eink-CTL/Src
 SourceFiles=ffconf.h;bsp_driver_sd.h;fatfs.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;mxconstants.h;bsp_driver_sd.c;fatfs.c;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
