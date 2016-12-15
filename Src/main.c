@@ -95,7 +95,7 @@ int main(void)
   MX_TIM3_Init();
 
   /* USER CODE BEGIN 2 */
-	HAL_Delay(50);
+	HAL_Delay(500);
 	Unity_check();
   /* USER CODE END 2 */
 
