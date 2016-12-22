@@ -13,7 +13,29 @@
 #else
   #define __SEND while (nRF24L01_TxPack(&tpt) != _SET) { nRF24L01_Channel_Init(40); }//HAL_Delay(4);}
 #endif
+static void BeepCtl(void) {
+	extern TIM_HandleTypeDef htim3;
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	HAL_Delay(100);
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_TIM_Base_Stop(&htim3);
 	
+}
+static void BeepOn(void) {
+	
+	extern TIM_HandleTypeDef htim3;
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+	
+}
+static void BeepOff(void) {
+	extern TIM_HandleTypeDef htim3;
+	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
+	HAL_TIM_Base_Stop(&htim3);
+}
 /* Wirless private var */
 static const uint8_t addr_type1[5] = {0x34,0x43,0x10,0x10,0x01};
 static const uint8_t addr_type2[5] = {0x34,0x43,0x10,0x10,0x02};
@@ -41,6 +63,8 @@ uint32_t Unity_check(void) {
 	uint8_t status = 0x00;
 	
 	LCD_Init();
+	HAL_Delay(50);
+	LCD_Init();
 	LCD_Clear(GREEN);
 	POINT_COLOR = BLACK;
 	LCD_ShowString(0, 0, LCD_TEXT("Version V3.0"));
@@ -63,7 +87,11 @@ uint32_t Unity_check(void) {
 		POINT_COLOR = BLACK;
 		LCD_ShowString(0, 40, LCD_TEXT("Wirless module OK!"));
 	}
-	
+	/* Notice Beep */
+	BeepCtl();
+	BeepCtl();
+	BeepCtl();
+	BeepCtl();
 	/* if some thing wrong, stop at there */
 	while (status);
 	
@@ -167,7 +195,7 @@ static void File_Trasmit(uint32_t file_loc) {
 				tpt.pSrc += 32;
 				__SEND;
 				
-				/* ½ø¶ÈÌõ */
+				/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 				/*
 				i_per = 75/loop
 				j_per = j_per * (32 / Byte) */
@@ -176,14 +204,17 @@ static void File_Trasmit(uint32_t file_loc) {
 				/* Chancel and error */
 				if (Usr_Cancel_Flag == 2) {
 					LCD_Fill(80, 270, 240, 304, WHITE);
-					/* ·¢ËÍÊ§°Ü */
+					/* ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ */
 					LCD_ShowUsrFont24(20 + 80, 270, font_ch[4]);
 					LCD_ShowUsrFont24(20 + 104, 270, font_ch[5]);
 					LCD_ShowUsrFont24(20 + 128, 270, font_ch[7]);
 					LCD_ShowUsrFont24(20 + 152, 270, font_ch[8]);
 					Usr_Cancel_Flag = 1;
+					BeepOn();
 					while (HAL_GPIO_ReadPin(Usr_Key_Right_GPIO_Port,
-						                      Usr_Key_Right_Pin) == GPIO_PIN_SET);
+						                      Usr_Key_Right_Pin) == GPIO_PIN_SET) {
+					}
+					BeepOff();
 				}
 				if (Usr_Cancel_Flag == 1) {
 					Usr_Cancel_Flag = 0;
@@ -239,6 +270,11 @@ static void File_Trasmit(uint32_t file_loc) {
 	HAL_GPIO_WritePin(SLAVE_POWER_SWITCH_GPIO_Port,
 	                  SLAVE_POWER_SWITCH_Pin,
 	                  GPIO_PIN_SET);
+
+	/* Notice Beep */
+	BeepCtl();
+	HAL_Delay(100);
+	BeepCtl();
 }
 void Unit_Handle(void *arg) {
 	static uint32_t mode = 1;
@@ -253,20 +289,20 @@ void Unit_Handle(void *arg) {
 	switch (mode) {
 		
 		/* mode = 1
-		   Í¼ÐÎ»æÖÆÏà¹Ø
-		   Íê³É»æÖÆºó×ªµ½°´¼ü¼ì²â
+		   Í¼ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		   ï¿½ï¿½ï¿½É»ï¿½ï¿½Æºï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		*/
 		case 1:
 			LCD_Clear(WHITE);
 			POINT_COLOR = BLACK;
 			
 			/**
-		    * »æÖÆº¯Êý
+		    * ï¿½ï¿½ï¿½Æºï¿½ï¿½ï¿½
 		   */
-			/* »æÖÆÈ·¶¨ */
+			/* ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ */
 			LCD_ShowUsrFont24(10, 190, font_ch[0]);
 			LCD_ShowUsrFont24(34, 190, font_ch[1]);
-			/* »æÖÆÈ¡Ïû */
+			/* ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ */
 			LCD_ShowUsrFont24(180, 190, font_ch[2]);
 			LCD_ShowUsrFont24(204, 190, font_ch[3]);
 			/* Draw a line */
@@ -311,7 +347,7 @@ void Unit_Handle(void *arg) {
 			break;
 			
         /* mode = 2
-           °´¼ü¼ì²â²¿·Ö
+           ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½â²¿ï¿½ï¿½
 		*/
 		case 2:
 			key_val = Usr_Key_Scan();
@@ -333,7 +369,7 @@ void Unit_Handle(void *arg) {
 			break;
 		
 		/* mode = 3
-			 ÎÄ¼þ·¢ËÍÄ£Ê½
+			 ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 		*/
 		case 3:
 			File_Trasmit(file_loc);
