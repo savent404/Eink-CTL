@@ -1,16 +1,5 @@
 #include "key.h"
 
-//void Usr_Key_Init(void){
-//    GPIO_InitTypeDef GPIO_InitStruct = {
-//        .Pin = GPIO_PIN_0 | GPIO_PIN_1 |\
-//               GPIO_PIN_2 | GPIO_PIN_3,
-//        .Mode = GPIO_MODE_INPUT,
-//        .Pull = GPIO_PULLUP,
-//    };
-//    
-//    HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-//}
-
 KeyValueStructure Usr_Key_Scan(void){
     static unsigned char status = 0x00;
     unsigned char buff = 0, ans;

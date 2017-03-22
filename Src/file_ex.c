@@ -10,10 +10,11 @@ const  TCHAR dir[] = "0:/PICDTA";
 const  TCHAR Type_str[][4] = {"DTA", "ATD"};
 /**
   * @Retvl: @0x01 SD card open error
-	          @0x02 FATFS dir open error
-	*/
+	        @0x02 FATFS dir open error
+            @0x00 SD card Init OK
+  */
 uint8_t file_init(void) {
-	fs_err = f_mount(&fs, "0:/", 1);
+	fs_err = f_mount (&fs, "0:/", 1);
 	
 	/* sd card init error */
 	if (fs_err != FR_OK) {
@@ -21,7 +22,7 @@ uint8_t file_init(void) {
 	}
 	
 	/* dir open error */
-	fs_err = f_opendir(&fs_dir, "0:/PICDTA");
+	fs_err = f_opendir (&fs_dir, "0:/PICDTA");
 	if (fs_err != FR_OK) {
 		return 0x02;
 	}
@@ -37,6 +38,8 @@ uint8_t file_init(void) {
 }
 
 /**
+  * @Brief: Open Locked Dir, find file with item's location
+  * @Para loc: the file's location in This Dir(0:/PICDTA)
   * @Retvl: \file_pt pointer of FIL structure
     @Retvl: @0x01 open dir error
             @0x02 readdir func error
@@ -70,6 +73,7 @@ uint8_t file_open(uint32_t loc,FIL* file_pt) {
 }
 
 /**
+  * @Brief: Get avaliable files number in The dir
   * @Retvl: number of file in "0:PICDTA/"
   */
 uint32_t number_of_file(void) {
@@ -77,6 +81,7 @@ uint32_t number_of_file(void) {
 }
 
 /**
+  * @Brief: get the type of surpported file type
   * @Retvl: \type of file
             @0x00 Unknow type
             @0x01 BLACK-WHITE(Four Layer) file

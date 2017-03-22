@@ -13,6 +13,10 @@
 #else
   #define __SEND while (nRF24L01_TxPack(&tpt) != _SET) { nRF24L01_Channel_Init(40); }//HAL_Delay(4);}
 #endif
+
+/**
+ * @Brief: One shout of Beep, about beep 100ms
+ */
 static void BeepCtl(void) {
 	extern TIM_HandleTypeDef htim3;
 	HAL_TIM_Base_Start(&htim3);
@@ -21,8 +25,11 @@ static void BeepCtl(void) {
 	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	HAL_TIM_Base_Stop(&htim3);
-	
 }
+
+/**
+ * @Brief: Turn on Beep
+ */
 static void BeepOn(void) {
 	
 	extern TIM_HandleTypeDef htim3;
@@ -30,22 +37,29 @@ static void BeepOn(void) {
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 	
 }
+
+/**
+ * @Brief: Turn off Beep
+ */
 static void BeepOff(void) {
 	extern TIM_HandleTypeDef htim3;
 	HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_RESET);
 	HAL_TIM_Base_Stop(&htim3);
 }
+
 /* Wirless private var */
 static const uint8_t addr_type1[5] = {0x34,0x43,0x10,0x10,0x01};
 static const uint8_t addr_type2[5] = {0x34,0x43,0x10,0x10,0x02};
 
+/* When translate data whthin Wirless module
+   for Identify picture's type, we should add a typical character*/
 const uint8_t        start_flag_type1[] = "A";
 const uint8_t        start_flag_type2[] = "B";
 const uint8_t        eof_flag[]   = "EOF";
 nRF24L01_TxStructure tpt;
 
-/* LCD private var */
+/* LCD private var and usr define function in LDC driver module*/
 extern void          LCD_ShowUsrFont24(unsigned short x, unsigned short y, const char *src);
 extern void          LCD_Draw_ATD_Black(unsigned char x, unsigned short y, unsigned char *src);
 extern void          LCD_Draw_ATD_Red(unsigned char x, unsigned short y, unsigned char *src);
@@ -120,6 +134,11 @@ unsigned char Wirless_WaitingTx_CancelHook(void) {
   }
   return 0;
 }
+
+/**
+ * @Brief: Translate a file to slaver, surpport multi-picture
+ * @Para file_loc : file's location in DIR(0:/PICDTA)
+ */
 static void File_Trasmit(uint32_t file_loc) {
 	FIL file;
 	uint32_t file_id = 0;
@@ -177,7 +196,6 @@ static void File_Trasmit(uint32_t file_loc) {
 		uint32_t i,j;
 		UINT     cnt;
 
-		
 		/* send start flag */
 		TIMEOUT_cnt = 0;
 		tpt.Txnum = 1;
@@ -289,20 +307,20 @@ void Unit_Handle(void *arg) {
 	switch (mode) {
 		
 		/* mode = 1
-		   ͼ�λ�������
-		   ���ɻ��ƺ�ת����������
+		   Init LCD usr interface
+		   [*]clear LCD
+		   [*]show chinese character
+		   [*]show (static)loc picture
 		*/
 		case 1:
 			LCD_Clear(WHITE);
 			POINT_COLOR = BLACK;
 			
 			/**
-		    * ���ƺ���
-		   */
-			/* ����ȷ�� */
+		     * show chinese character
+			 */
 			LCD_ShowUsrFont24(10, 190, font_ch[0]);
 			LCD_ShowUsrFont24(34, 190, font_ch[1]);
-			/* ����ȡ�� */
 			LCD_ShowUsrFont24(180, 190, font_ch[2]);
 			LCD_ShowUsrFont24(204, 190, font_ch[3]);
 			/* Draw a line */
@@ -347,8 +365,8 @@ void Unit_Handle(void *arg) {
 			break;
 			
         /* mode = 2
-           �������ⲿ��
-		*/
+           Inc Pic_loc, Show new picture
+		 */
 		case 2:
 			key_val = Usr_Key_Scan();
 			
@@ -369,8 +387,8 @@ void Unit_Handle(void *arg) {
 			break;
 		
 		/* mode = 3
-			 �ļ�����ģʽ
-		*/
+		   Translate data to Slaver
+		 */
 		case 3:
 			File_Trasmit(file_loc);
 			mode = 1;

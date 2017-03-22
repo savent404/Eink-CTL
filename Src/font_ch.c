@@ -1,4 +1,4 @@
-const char font_ch[][72] =/*"确定取消发送中失败*/
+const char font_ch[][72] =/*"纭畾鍙栨秷鍙戦�佷腑澶辫触*/
 {
 
 
