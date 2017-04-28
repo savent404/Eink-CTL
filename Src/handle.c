@@ -178,6 +178,7 @@ static void File_Trasmit(uint32_t file_loc) {
 			nRF24L01_TxInit((uint8_t*)addr_type1);
 			nRF24L01_RxInit(P0, (uint8_t*)addr_type1);
 			tpt.pSrc = (uint8_t*)start_flag_type1;
+			f_lseek(&file, 32);
 			loop = 10;
 			Byte = 120000/10;
 			break;
@@ -210,8 +211,8 @@ static void File_Trasmit(uint32_t file_loc) {
 				
 				/* send data */
 				TIMEOUT_cnt = 0;
-				tpt.pSrc += 32;
 				__SEND;
+				tpt.pSrc += 32;
 				
 				/* ������ */
 				/*
