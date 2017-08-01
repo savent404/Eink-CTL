@@ -148,7 +148,7 @@ static void File_Trasmit(uint32_t file_loc) {
 	/* Power Up the Slave */
 	HAL_GPIO_WritePin(SLAVE_POWER_SWITCH_GPIO_Port,
 	                  SLAVE_POWER_SWITCH_Pin,
-	                  GPIO_PIN_RESET);
+	                  GPIO_PIN_SET);
 	/* Led up */
 	HAL_GPIO_WritePin(Usr_Led_0_GPIO_Port,
 	                  Usr_Led_0_Pin,
@@ -288,7 +288,7 @@ static void File_Trasmit(uint32_t file_loc) {
 	/* Power Down the Slave*/
 	HAL_GPIO_WritePin(SLAVE_POWER_SWITCH_GPIO_Port,
 	                  SLAVE_POWER_SWITCH_Pin,
-	                  GPIO_PIN_SET);
+	                  GPIO_PIN_RESET);
 
 	/* Notice Beep */
 	BeepCtl();
