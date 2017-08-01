@@ -106,8 +106,6 @@ uint32_t Unity_check(void) {
 	BeepCtl();
 	BeepCtl();
 	BeepCtl();
-	/* if some thing wrong, stop at there */
-	while (status);
 	
 	/* nRF24L01 check ok, then init moudel */
 	nRF24L01_Init();
@@ -115,7 +113,9 @@ uint32_t Unity_check(void) {
 
 	
 	/* file system has already init in file_init() */
-	return 0x00;
+  
+  /* return error code */
+	return status;
 }
 
 /**

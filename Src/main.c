@@ -76,7 +76,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  uint32_t flag;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -97,6 +97,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_Delay(500);
 	Unity_check();
+	flag = Unity_check();
+  while (flag);
   /* USER CODE END 2 */
 
   /* Infinite loop */
