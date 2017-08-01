@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * @file   fatfs.h
-  * @brief  Header for fatfs applications
+  * File Name          : main.h
+  * Description        : This file contains the common defines of the application
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -45,33 +45,51 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __fatfs_H
-#define __fatfs_H
-#ifdef __cplusplus
- extern "C" {
-#endif
-
-#include "ff.h"
-#include "ff_gen_drv.h"
-#include "sd_diskio.h" /* defines SD_Driver as external */
+#ifndef __MAIN_H
+#define __MAIN_H
+  /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
-extern uint8_t retSD; /* Return value for SD */
-extern char SD_Path[4]; /* SD logical drive path */
+/* Private define ------------------------------------------------------------*/
 
-void MX_FATFS_Init(void);
+#define SLAVE_POWER_SWITCH_Pin GPIO_PIN_2
+#define SLAVE_POWER_SWITCH_GPIO_Port GPIOC
+#define Usr_Led_0_Pin GPIO_PIN_0
+#define Usr_Led_0_GPIO_Port GPIOA
+#define Usr_Key_Right_Pin GPIO_PIN_10
+#define Usr_Key_Right_GPIO_Port GPIOD
+#define Usr_Key_Up_Pin GPIO_PIN_11
+#define Usr_Key_Up_GPIO_Port GPIOD
+#define Usr_Key_Down_Pin GPIO_PIN_12
+#define Usr_Key_Down_GPIO_Port GPIOD
+#define Usr_Key_Left_Pin GPIO_PIN_13
+#define Usr_Key_Left_GPIO_Port GPIOD
+#define NRF_CSN_Pin GPIO_PIN_9
+#define NRF_CSN_GPIO_Port GPIOA
+#define NRF_CE_Pin GPIO_PIN_10
+#define NRF_CE_GPIO_Port GPIOA
+#define NRF_IRQ_Pin GPIO_PIN_6
+#define NRF_IRQ_GPIO_Port GPIOD
 
-/* USER CODE BEGIN Prototypes */
+/* USER CODE BEGIN Private defines */
 
-/* USER CODE END Prototypes */
-#ifdef __cplusplus
-}
-#endif
-#endif /*__fatfs_H */
+/* USER CODE END Private defines */
 
+void _Error_Handler(char *, int);
+
+#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+*/ 
+
+#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
