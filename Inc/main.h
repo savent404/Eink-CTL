@@ -1,8 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : stm32f1xx_hal_msp.c
-  * Description        : This file provides code for the MSP Initialization 
-  *                      and de-Initialization codes.
+  * File Name          : main.h
+  * Description        : This file contains the common defines of the application
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -46,61 +45,51 @@
   *
   ******************************************************************************
   */
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx_hal.h"
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __MAIN_H
+#define __MAIN_H
+  /* Includes ------------------------------------------------------------------*/
 
-extern void _Error_Handler(char *, int);
-/* USER CODE BEGIN 0 */
+/* USER CODE BEGIN Includes */
 
-/* USER CODE END 0 */
-/**
-  * Initializes the Global MSP.
-  */
-void HAL_MspInit(void)
-{
-  /* USER CODE BEGIN MspInit 0 */
+/* USER CODE END Includes */
 
-  /* USER CODE END MspInit 0 */
+/* Private define ------------------------------------------------------------*/
 
-  __HAL_RCC_AFIO_CLK_ENABLE();
+#define SLAVE_POWER_SWITCH_Pin GPIO_PIN_2
+#define SLAVE_POWER_SWITCH_GPIO_Port GPIOC
+#define Usr_Led_0_Pin GPIO_PIN_0
+#define Usr_Led_0_GPIO_Port GPIOA
+#define Usr_Key_Right_Pin GPIO_PIN_10
+#define Usr_Key_Right_GPIO_Port GPIOD
+#define Usr_Key_Up_Pin GPIO_PIN_11
+#define Usr_Key_Up_GPIO_Port GPIOD
+#define Usr_Key_Down_Pin GPIO_PIN_12
+#define Usr_Key_Down_GPIO_Port GPIOD
+#define Usr_Key_Left_Pin GPIO_PIN_13
+#define Usr_Key_Left_GPIO_Port GPIOD
+#define NRF_CSN_Pin GPIO_PIN_9
+#define NRF_CSN_GPIO_Port GPIOA
+#define NRF_CE_Pin GPIO_PIN_10
+#define NRF_CE_GPIO_Port GPIOA
+#define NRF_IRQ_Pin GPIO_PIN_6
+#define NRF_IRQ_GPIO_Port GPIOD
 
-  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+/* USER CODE BEGIN Private defines */
 
-  /* System interrupt init*/
-  /* MemoryManagement_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(MemoryManagement_IRQn, 0, 0);
-  /* BusFault_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(BusFault_IRQn, 0, 0);
-  /* UsageFault_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(UsageFault_IRQn, 0, 0);
-  /* SVCall_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SVCall_IRQn, 0, 0);
-  /* DebugMonitor_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DebugMonitor_IRQn, 0, 0);
-  /* PendSV_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(PendSV_IRQn, 0, 0);
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+/* USER CODE END Private defines */
 
-    /**NOJTAG: JTAG-DP Disabled and SW-DP Enabled 
-    */
-  __HAL_AFIO_REMAP_SWJ_NOJTAG();
+void _Error_Handler(char *, int);
 
-  /* USER CODE BEGIN MspInit 1 */
-
-  /* USER CODE END MspInit 1 */
-}
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
+#define Error_Handler() _Error_Handler(__FILE__, __LINE__)
 
 /**
   * @}
-  */
+  */ 
 
 /**
   * @}
-  */
+*/ 
 
+#endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
