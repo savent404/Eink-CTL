@@ -96,8 +96,13 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 	HAL_Delay(500);
-	Unity_check();
 	flag = Unity_check();
+  
+  if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) == 0)
+  {
+    HAL_NVIC_SystemReset();
+  }
+  
   while (flag);
   /* USER CODE END 2 */
 
