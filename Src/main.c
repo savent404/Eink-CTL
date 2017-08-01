@@ -101,7 +101,7 @@ int main(void)
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
-
+ 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SDIO_SD_Init();
@@ -113,6 +113,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	HAL_Delay(500);
 	flag = Unity_check();
+  
+  ADC_LL_Start();
   
   if (__HAL_RCC_GET_FLAG(RCC_FLAG_SFTRST) == 0)
   {

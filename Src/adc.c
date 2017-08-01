@@ -137,7 +137,21 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+void ADC_LL_Start(void)
+{
+    HAL_ADC_Start(&hadc1);
+}
 
+void ADC_LL_Stop(void)
+{
+    HAL_ADC_Stop(&hadc1);
+}
+
+float ADC_GetVoltage(void)
+{
+    const float convert = 3.3f / 4096;
+    return HAL_ADC_GetValue(&hadc1) * convert;
+}
 /* USER CODE END 1 */
 
 /**

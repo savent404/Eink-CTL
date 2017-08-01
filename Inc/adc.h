@@ -72,7 +72,9 @@ extern void _Error_Handler(char *, int);
 void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void ADC_LL_Start(void);
+void ADC_LL_Stop(void);
+float ADC_GetVoltage(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

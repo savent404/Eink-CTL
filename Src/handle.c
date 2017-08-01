@@ -5,6 +5,8 @@
 #include "ff.h"
 #include "file_ex.h"
 #include "nRF24L01.h"
+#include "adc.h"
+
 /* Usr Define */
 #define LCD_TEXT(x) (const unsigned char*)(x)
 
@@ -13,6 +15,36 @@
 #else
   #define __SEND while (nRF24L01_TxPack(&tpt) != _SET) { nRF24L01_Channel_Init(40); }//HAL_Delay(4);}
 #endif
+
+
+/**
+ * @Breif: Draw Power level
+ * @Para:  0~3 -> none~full
+ */
+static void DrawPowerLevel(uint8_t level)
+{
+	uint16_t x = 180;
+
+	if (level == 0)
+	{
+		LCD_Clear(WHITE);
+		POINT_COLOR = RED;
+
+		LCD_ShowString(0, 0, "No Power!");
+		LCD_ShowString(0, 20, "Please Recharge your device");
+
+		while (1);
+	}
+	else if (level == 1)
+		LCD_DrawRectangle(x, 230, x + 5, 250);
+	else
+		while (level--)
+		{
+			for (uint8_t i = 0; i <= 5; i++)
+				LCD_DrawLine(x+i, 230, x+i, 250);
+			x += 10;
+		}
+}
 
 /**
  * @Brief: One shout of Beep, about beep 100ms
@@ -312,6 +344,7 @@ void Unit_Handle(void *arg) {
 		   [*]clear LCD
 		   [*]show chinese character
 		   [*]show (static)loc picture
+		   [*]show power
 		*/
 		case 1:
 			LCD_Clear(WHITE);
@@ -360,6 +393,33 @@ void Unit_Handle(void *arg) {
 			
 			/* close file */
 			efs = f_close(&file);
+
+			/* show power */
+			float voltage = ADC_GetVoltage() * 4.0f;
+			char string[10];
+			sprintf(string, "%.2fV", voltage);
+			POINT_COLOR = BLACK;
+			LCD_ShowString(180, 260, (const unsigned char*)string);
+			if (voltage >= 3.9*3)
+			{
+				DrawPowerLevel(4);
+			}
+			else if (voltage >= 3.8*3)
+			{
+				DrawPowerLevel(3);
+			}
+			else if (voltage >= 3.7*3)
+			{
+				DrawPowerLevel(2);
+			}
+			else if (voltage >= 3.5*3)
+			{
+				DrawPowerLevel(1);
+			}
+			else
+			{
+				DrawPowerLevel(0);
+			}
 			
 			/* goto mode 2*/
 			mode = 2;
